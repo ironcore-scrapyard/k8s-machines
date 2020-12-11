@@ -29,18 +29,18 @@ import (
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/cluster"
 	"github.com/gardener/controller-manager-library/pkg/logger"
 	"github.com/gardener/controller-manager-library/pkg/resources"
-	"github.com/gardener/controller-manager-library/pkg/types/infodata/simple"
 	"k8s.io/apimachinery/pkg/labels"
 
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
-type Machine struct {
-	Name resources.ObjectName
-	*api.MachineInfoSpec
-}
+/* REMARK:
+ * when the metadata watches are implemented in cm lib a pure name indexer
+ * makes sense to save memory
+ * Getting the machine info then can be implmeneted by an api server get round trip.
+ */
 
-type Machines struct {
+type FullIndexer struct {
 	initlock    sync.RWMutex
 	lock        sync.RWMutex
 	initialized int32
@@ -49,8 +49,8 @@ type Machines struct {
 	byUUIDs     map[string]*Machine
 }
 
-func NewMachines() *Machines {
-	m := &Machines{
+func NewFullIndexer() *FullIndexer {
+	m := &FullIndexer{
 		elements: map[resources.ObjectName]*Machine{},
 		byMACs:   map[string]*Machine{},
 		byUUIDs:  map[string]*Machine{},
@@ -59,12 +59,33 @@ func NewMachines() *Machines {
 	return m
 }
 
-func (this *Machines) Wait() {
+func (this *FullIndexer) Wait() {
 	this.initlock.RLock()
 	this.initlock.RUnlock()
 }
 
-func (this *Machines) Setup(logger logger.LogContext, cluster cluster.Interface) error {
+func (this *FullIndexer) GetByMAC(mac string) *Machine {
+	this.lock.RLock()
+	defer this.lock.RUnlock()
+
+	return this.byMACs[mac]
+}
+
+func (this *FullIndexer) GetByUUID(uuid string) *Machine {
+	this.lock.RLock()
+	defer this.lock.RUnlock()
+
+	return this.byUUIDs[uuid]
+}
+
+func (this *FullIndexer) GetByName(name resources.ObjectName) *Machine {
+	this.lock.RLock()
+	defer this.lock.RUnlock()
+
+	return this.elements[name]
+}
+
+func (this *FullIndexer) Setup(logger logger.LogContext, cluster cluster.Interface) error {
 	if atomic.LoadInt32(&this.initialized) != 0 {
 		logger.Infof("machine cache already initialized")
 		return nil
@@ -83,8 +104,9 @@ func (this *Machines) Setup(logger logger.LogContext, cluster cluster.Interface)
 	list, _ := resc.ListCached(labels.Everything())
 
 	for _, l := range list {
-		elem, err := this.Update(logger, l)
+		elem, err, _ := ValidateMachine(logger, l)
 		if elem != nil {
+			this.Set(elem)
 			logger.Infof("found machine %s", elem.Name)
 		}
 		if err != nil {
@@ -97,7 +119,7 @@ func (this *Machines) Setup(logger logger.LogContext, cluster cluster.Interface)
 	return nil
 }
 
-func (this *Machines) Set(m *Machine) error {
+func (this *FullIndexer) Set(m *Machine) error {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 
@@ -109,7 +131,7 @@ func (this *Machines) Set(m *Machine) error {
 	return nil
 }
 
-func (this *Machines) Delete(logger logger.LogContext, name resources.ObjectName) {
+func (this *FullIndexer) Delete(name resources.ObjectName) {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 	old := this.elements[name]
@@ -118,7 +140,7 @@ func (this *Machines) Delete(logger logger.LogContext, name resources.ObjectName
 	}
 }
 
-func (this *Machines) cleanup(m *Machine) {
+func (this *FullIndexer) cleanup(m *Machine) {
 	for _, n := range m.NICs {
 		delete(this.byMACs, n.MAC)
 	}
@@ -126,7 +148,7 @@ func (this *Machines) cleanup(m *Machine) {
 	delete(this.elements, m.Name)
 }
 
-func (this *Machines) set(m *Machine) {
+func (this *FullIndexer) set(m *Machine) {
 	for _, n := range m.NICs {
 		this.byMACs[n.MAC] = m
 	}
@@ -134,44 +156,4 @@ func (this *Machines) set(m *Machine) {
 		this.byUUIDs[m.UUID] = m
 	}
 	this.elements[m.Name] = m
-}
-
-func (this *Machines) Update(logger logger.LogContext, obj resources.Object) (*Machine, error) {
-	m, err := NewMachine(obj.Data().(*api.MachineInfo))
-	if err == nil {
-		err = this.Set(m)
-	}
-	if err != nil {
-		logger.Errorf("invalid machine: %s", err)
-		_, err2 := resources.ModifyStatus(obj, func(mod *resources.ModificationState) error {
-			m := mod.Data().(*api.MachineInfo)
-			mod.AssureStringValue(&m.Status.State, api.STATE_INVALID)
-			mod.AssureStringValue(&m.Status.Message, err.Error())
-			return nil
-		})
-		return nil, err2
-	}
-	_, err = resources.ModifyStatus(obj, func(mod *resources.ModificationState) error {
-		m := mod.Data().(*api.MachineInfo)
-		mod.AssureStringValue(&m.Status.State, api.STATE_OK)
-		mod.AssureStringValue(&m.Status.Message, "machine ok")
-		return nil
-	})
-	return m, err
-}
-
-func NewMachine(m *api.MachineInfo) (*Machine, error) {
-	values := m.Spec.Values.Values
-	nics := m.Spec.NICs
-	if values == nil {
-		values = simple.Values{}
-	}
-
-	if nics == nil {
-		nics = []api.NIC{}
-	}
-	return &Machine{
-		Name:            resources.NewObjectName(m.Namespace, m.Name),
-		MachineInfoSpec: &m.Spec,
-	}, nil
 }

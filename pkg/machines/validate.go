@@ -23,52 +23,47 @@
 package machines
 
 import (
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller"
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller/reconcile"
 	"github.com/gardener/controller-manager-library/pkg/logger"
 	"github.com/gardener/controller-manager-library/pkg/resources"
+	"github.com/gardener/controller-manager-library/pkg/types/infodata/simple"
 
-	"github.com/onmetal/k8s-machines/pkg/controllers"
-	"github.com/onmetal/k8s-machines/pkg/machines"
+	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
-type reconciler struct {
-	reconcile.DefaultReconciler
-
-	controller controller.Interface
-	config     *Config
-
-	machines machines.MachineIndexer
-}
-
-var _ reconcile.Interface = &reconciler{}
-
-func (this *reconciler) Setup() error {
-	err := this.machines.Setup(this.controller, this.controller.GetMainCluster())
-	if err == nil {
-		controllers.PropagateMachineInfos(this.machines)
+func NewMachine(m *api.MachineInfo) (*Machine, error) {
+	values := m.Spec.Values.Values
+	nics := m.Spec.NICs
+	if values == nil {
+		values = simple.Values{}
 	}
-	return err
-}
 
-///////////////////////////////////////////////////////////////////////////////
-
-func (this *reconciler) Config() *Config {
-	return this.config
-}
-
-func (this *reconciler) Reconcile(logger logger.LogContext, obj resources.Object) reconcile.Status {
-	logger.Infof("reconcile")
-
-	m, err, err2 := machines.ValidateMachine(logger, obj)
-	if err == nil {
-		this.machines.Set(m)
+	if nics == nil {
+		nics = []api.NIC{}
 	}
-	return reconcile.DelayOnError(logger, err2)
+	return &Machine{
+		Name:            resources.NewObjectName(m.Namespace, m.Name),
+		MachineInfoSpec: &m.Spec,
+	}, nil
 }
 
-func (this *reconciler) Deleted(logger logger.LogContext, key resources.ClusterObjectKey) reconcile.Status {
-	logger.Infof("deleted")
-	this.machines.Delete(key.ObjectName())
-	return reconcile.Succeeded(logger)
+func ValidateMachine(logger logger.LogContext, obj resources.Object) (*Machine, error, error) {
+	m, err := NewMachine(obj.Data().(*api.MachineInfo))
+
+	if err != nil {
+		logger.Errorf("invalid machine: %s", err)
+		_, err2 := resources.ModifyStatus(obj, func(mod *resources.ModificationState) error {
+			m := mod.Data().(*api.MachineInfo)
+			mod.AssureStringValue(&m.Status.State, api.STATE_INVALID)
+			mod.AssureStringValue(&m.Status.Message, err.Error())
+			return nil
+		})
+		return nil, err, err2
+	}
+	_, err = resources.ModifyStatus(obj, func(mod *resources.ModificationState) error {
+		m := mod.Data().(*api.MachineInfo)
+		mod.AssureStringValue(&m.Status.State, api.STATE_OK)
+		mod.AssureStringValue(&m.Status.Message, "machine ok")
+		return nil
+	})
+	return m, nil, err
 }

@@ -21,19 +21,14 @@ package machines
 import (
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller"
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller/reconcile"
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/extension"
-	"github.com/gardener/controller-manager-library/pkg/ctxutil"
 	"github.com/gardener/controller-manager-library/pkg/resources/apiextensions"
 
 	"github.com/onmetal/k8s-machines/pkg/apis/machines/crds"
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 	"github.com/onmetal/k8s-machines/pkg/controllers"
-	"github.com/onmetal/k8s-machines/pkg/machines"
 )
 
 const NAME = "machineinfos"
-
-var key = ctxutil.SimpleKey(NAME)
 
 func init() {
 	crds.AddToRegistry(apiextensions.DefaultRegistry())
@@ -58,13 +53,7 @@ func Create(controller controller.Interface) (reconcile.Interface, error) {
 	this := &reconciler{
 		controller: controller,
 		config:     config,
-		machines:   GetMachineCache(controller.GetEnvironment()),
+		machines:   controllers.GetOrCreateMachineIndex(controller.GetEnvironment()),
 	}
 	return this, nil
-}
-
-func GetMachineCache(env extension.Environment) *machines.Machines {
-	return env.ControllerManager().GetOrCreateSharedValue(key, func() interface{} {
-		return machines.NewMachines()
-	}).(*machines.Machines)
 }

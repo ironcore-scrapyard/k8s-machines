@@ -25,11 +25,30 @@ package controllers
 import (
 	"sync"
 
+	"github.com/gardener/controller-manager-library/pkg/controllermanager/extension"
+	"github.com/gardener/controller-manager-library/pkg/ctxutil"
+
 	"github.com/onmetal/k8s-machines/pkg/machines"
 )
 
+var key = ctxutil.SimpleKey("machineindex")
+
+func GetOrCreateMachineIndex(env extension.Environment) machines.MachineIndexer {
+	return env.ControllerManager().GetOrCreateSharedValue(key, func() interface{} {
+		return machines.NewFullIndexer()
+	}).(machines.MachineIndexer)
+}
+
+func GetMachineIndex(env extension.Environment) machines.MachineIndexer {
+	i := env.ControllerManager().GetSharedValue(key)
+	if i != nil {
+		return i.(machines.MachineIndexer)
+	}
+	return nil
+}
+
 type Client interface {
-	PropagateMachineInfoCache(*machines.Machines)
+	PropagateMachineIndex(machines.MachineIndex)
 }
 
 var registry []Client
@@ -41,10 +60,10 @@ func RegisterClient(c Client) {
 	registry = append(registry, c)
 }
 
-func PropagateMachineInfos(m *machines.Machines) {
+func PropagateMachineInfos(index machines.MachineIndex) {
 	lock.Lock()
 	defer lock.Unlock()
 	for _, c := range registry {
-		c.PropagateMachineInfoCache(m)
+		c.PropagateMachineIndex(index)
 	}
 }

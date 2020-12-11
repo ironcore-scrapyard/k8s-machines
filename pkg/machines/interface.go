@@ -23,52 +23,27 @@
 package machines
 
 import (
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller"
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller/reconcile"
+	"github.com/gardener/controller-manager-library/pkg/controllermanager/cluster"
 	"github.com/gardener/controller-manager-library/pkg/logger"
 	"github.com/gardener/controller-manager-library/pkg/resources"
 
-	"github.com/onmetal/k8s-machines/pkg/controllers"
-	"github.com/onmetal/k8s-machines/pkg/machines"
+	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
-type reconciler struct {
-	reconcile.DefaultReconciler
-
-	controller controller.Interface
-	config     *Config
-
-	machines machines.MachineIndexer
+type Machine struct {
+	Name resources.ObjectName
+	*api.MachineInfoSpec
 }
 
-var _ reconcile.Interface = &reconciler{}
-
-func (this *reconciler) Setup() error {
-	err := this.machines.Setup(this.controller, this.controller.GetMainCluster())
-	if err == nil {
-		controllers.PropagateMachineInfos(this.machines)
-	}
-	return err
+type MachineIndexer interface {
+	MachineIndex
+	Setup(logger logger.LogContext, cluster cluster.Interface) error
+	Set(m *Machine) error
+	Delete(name resources.ObjectName)
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-func (this *reconciler) Config() *Config {
-	return this.config
-}
-
-func (this *reconciler) Reconcile(logger logger.LogContext, obj resources.Object) reconcile.Status {
-	logger.Infof("reconcile")
-
-	m, err, err2 := machines.ValidateMachine(logger, obj)
-	if err == nil {
-		this.machines.Set(m)
-	}
-	return reconcile.DelayOnError(logger, err2)
-}
-
-func (this *reconciler) Deleted(logger logger.LogContext, key resources.ClusterObjectKey) reconcile.Status {
-	logger.Infof("deleted")
-	this.machines.Delete(key.ObjectName())
-	return reconcile.Succeeded(logger)
+type MachineIndex interface {
+	GetByMAC(mac string) *Machine
+	GetByUUID(uuid string) *Machine
+	GetByName(name resources.ObjectName) *Machine
 }
