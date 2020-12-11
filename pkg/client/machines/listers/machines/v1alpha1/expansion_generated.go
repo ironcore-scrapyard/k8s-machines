@@ -23,6 +23,14 @@
 
 package v1alpha1
 
+// BaseBoardManagementControllerInfoListerExpansion allows custom methods to be added to
+// BaseBoardManagementControllerInfoLister.
+type BaseBoardManagementControllerInfoListerExpansion interface{}
+
+// BaseBoardManagementControllerInfoNamespaceListerExpansion allows custom methods to be added to
+// BaseBoardManagementControllerInfoNamespaceLister.
+type BaseBoardManagementControllerInfoNamespaceListerExpansion interface{}
+
 // MachineInfoListerExpansion allows custom methods to be added to
 // MachineInfoLister.
 type MachineInfoListerExpansion interface{}

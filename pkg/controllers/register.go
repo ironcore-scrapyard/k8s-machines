@@ -31,6 +31,8 @@ import (
 	"github.com/onmetal/k8s-machines/pkg/machines"
 )
 
+////////////////////////////////////////////////////////////////////////////////
+
 var key = ctxutil.SimpleKey("machineindex")
 
 func GetOrCreateMachineIndex(env extension.Environment) machines.MachineIndexer {
@@ -47,23 +49,103 @@ func GetMachineIndex(env extension.Environment) machines.MachineIndexer {
 	return nil
 }
 
-type Client interface {
+////////////////////////////////////////////////////////////////////////////////
+
+var bmckey = ctxutil.SimpleKey("bmcindex")
+
+func GetOrCreateBMCIndex(env extension.Environment) machines.BMCIndexer {
+	return env.ControllerManager().GetOrCreateSharedValue(bmckey, func() interface{} {
+		return machines.NewBMCFullIndexer()
+	}).(machines.BMCIndexer)
+}
+
+func GetBMCIndex(env extension.Environment) machines.BMCIndexer {
+	i := env.ControllerManager().GetSharedValue(bmckey)
+	if i != nil {
+		return i.(machines.BMCIndexer)
+	}
+	return nil
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+type Client interface{}
+
+type MachineClient interface {
 	PropagateMachineIndex(machines.MachineIndex)
 }
 
-var registry []Client
-var lock sync.Mutex
-
-func RegisterClient(c Client) {
-	lock.Lock()
-	defer lock.Unlock()
-	registry = append(registry, c)
+type BMCClient interface {
+	PropagateBMCIndex(machines.BMCIndex)
 }
 
-func PropagateMachineInfos(index machines.MachineIndex) {
-	lock.Lock()
-	defer lock.Unlock()
-	for _, c := range registry {
-		c.PropagateMachineIndex(index)
+type registry struct {
+	lock           sync.Mutex
+	clients        []Client
+	machineindices []machines.MachineIndex
+	bmcindices     []machines.BMCIndex
+}
+
+var defaultRegistry = &registry{}
+
+func RegisterClient(c Client) {
+	defaultRegistry.RegisterClient(c)
+}
+
+func (this *registry) RegisterClient(c Client) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+	this.clients = append(this.clients, c)
+	if p, ok := c.(MachineClient); ok {
+		for _, e := range this.machineindices {
+			p.PropagateMachineIndex(e)
+		}
 	}
+	if p, ok := c.(BMCClient); ok {
+		for _, e := range this.bmcindices {
+			p.PropagateBMCIndex(e)
+		}
+	}
+}
+
+func PropagateMachineIndex(index machines.MachineIndex) {
+	defaultRegistry.PropagateMachineIndex(index)
+}
+
+func PropagateBMCIndex(index machines.BMCIndex) {
+	defaultRegistry.PropagateBMCIndex(index)
+}
+
+func (this *registry) PropagateMachineIndex(index machines.MachineIndex) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+
+	for _, e := range this.machineindices {
+		if e == index {
+			return
+		}
+	}
+	for _, c := range this.clients {
+		if p, ok := c.(MachineClient); ok {
+			p.PropagateMachineIndex(index)
+		}
+	}
+	this.machineindices = append(this.machineindices, index)
+}
+
+func (this *registry) PropagateBMCIndex(index machines.BMCIndex) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+
+	for _, e := range this.bmcindices {
+		if e == index {
+			return
+		}
+	}
+	for _, c := range this.clients {
+		if p, ok := c.(BMCClient); ok {
+			p.PropagateBMCIndex(index)
+		}
+	}
+	this.bmcindices = append(this.bmcindices, index)
 }

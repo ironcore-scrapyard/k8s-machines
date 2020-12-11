@@ -33,6 +33,10 @@ type FakeMachinesV1alpha1 struct {
 	*testing.Fake
 }
 
+func (c *FakeMachinesV1alpha1) BaseBoardManagementControllerInfos(namespace string) v1alpha1.BaseBoardManagementControllerInfoInterface {
+	return &FakeBaseBoardManagementControllerInfos{c, namespace}
+}
+
 func (c *FakeMachinesV1alpha1) MachineInfos(namespace string) v1alpha1.MachineInfoInterface {
 	return &FakeMachineInfos{c, namespace}
 }

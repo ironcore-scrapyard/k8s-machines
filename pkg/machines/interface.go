@@ -30,6 +30,9 @@ import (
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
+////////////////////////////////////////////////////////////////////////////////
+// Machine Info
+
 type Machine struct {
 	Name resources.ObjectName
 	*api.MachineInfoSpec
@@ -43,7 +46,30 @@ type MachineIndexer interface {
 }
 
 type MachineIndex interface {
+	IsInitialized() bool
 	GetByMAC(mac string) *Machine
 	GetByUUID(uuid string) *Machine
 	GetByName(name resources.ObjectName) *Machine
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BMC Info
+
+type BaseBoardManagementController struct {
+	Name resources.ObjectName
+	*api.BaseBoardManagementControllerInfoSpec
+}
+
+type BMCIndexer interface {
+	BMCIndex
+	Setup(logger logger.LogContext, cluster cluster.Interface) error
+	Set(m *BaseBoardManagementController) error
+	Delete(name resources.ObjectName)
+}
+
+type BMCIndex interface {
+	IsInitialized() bool
+	GetByMAC(mac string) *BaseBoardManagementController
+	GetByUUID(uuid string) *BaseBoardManagementController
+	GetByName(name resources.ObjectName) *BaseBoardManagementController
 }

@@ -40,52 +40,56 @@ import (
  * Getting the machine info then can be implmeneted by an api server get round trip.
  */
 
-type FullIndexer struct {
+type BMCFullIndexer struct {
 	initlock    sync.RWMutex
 	lock        sync.RWMutex
 	initialized int32
-	elements    map[resources.ObjectName]*Machine
-	byMACs      map[string]*Machine
-	byUUIDs     map[string]*Machine
+	elements    map[resources.ObjectName]*BaseBoardManagementController
+	byMACs      map[string]*BaseBoardManagementController
+	byUUIDs     map[string]*BaseBoardManagementController
 }
 
-func NewFullIndexer() *FullIndexer {
-	m := &FullIndexer{
-		elements: map[resources.ObjectName]*Machine{},
-		byMACs:   map[string]*Machine{},
-		byUUIDs:  map[string]*Machine{},
+func NewBMCFullIndexer() BMCIndexer {
+	m := &BMCFullIndexer{
+		elements: map[resources.ObjectName]*BaseBoardManagementController{},
+		byMACs:   map[string]*BaseBoardManagementController{},
+		byUUIDs:  map[string]*BaseBoardManagementController{},
 	}
 	m.initlock.Lock()
 	return m
 }
 
-func (this *FullIndexer) Wait() {
+func (this *BMCFullIndexer) Wait() {
 	this.initlock.RLock()
 	this.initlock.RUnlock()
 }
 
-func (this *FullIndexer) GetByMAC(mac string) *Machine {
+func (this *BMCFullIndexer) IsInitialized() bool {
+	return atomic.LoadInt32(&this.initialized) != 0
+}
+
+func (this *BMCFullIndexer) GetByMAC(mac string) *BaseBoardManagementController {
 	this.lock.RLock()
 	defer this.lock.RUnlock()
 
 	return this.byMACs[mac]
 }
 
-func (this *FullIndexer) GetByUUID(uuid string) *Machine {
+func (this *BMCFullIndexer) GetByUUID(uuid string) *BaseBoardManagementController {
 	this.lock.RLock()
 	defer this.lock.RUnlock()
 
 	return this.byUUIDs[uuid]
 }
 
-func (this *FullIndexer) GetByName(name resources.ObjectName) *Machine {
+func (this *BMCFullIndexer) GetByName(name resources.ObjectName) *BaseBoardManagementController {
 	this.lock.RLock()
 	defer this.lock.RUnlock()
 
 	return this.elements[name]
 }
 
-func (this *FullIndexer) Setup(logger logger.LogContext, cluster cluster.Interface) error {
+func (this *BMCFullIndexer) Setup(logger logger.LogContext, cluster cluster.Interface) error {
 	if atomic.LoadInt32(&this.initialized) != 0 {
 		logger.Infof("machine cache already initialized")
 		return nil
@@ -96,7 +100,7 @@ func (this *FullIndexer) Setup(logger logger.LogContext, cluster cluster.Interfa
 		return nil
 	}
 
-	resc, err := cluster.Resources().Get(api.MACHINEINFO)
+	resc, err := cluster.Resources().Get(api.BASEBOARDMANAGEMENTCONTROLLERINFO)
 	if err != nil {
 		return err
 	}
@@ -104,7 +108,7 @@ func (this *FullIndexer) Setup(logger logger.LogContext, cluster cluster.Interfa
 	list, _ := resc.ListCached(labels.Everything())
 
 	for _, l := range list {
-		elem, err, _ := ValidateMachine(logger, l)
+		elem, err, _ := ValidateBMC(logger, l)
 		if elem != nil {
 			this.Set(elem)
 			logger.Infof("found machine %s", elem.Name)
@@ -119,7 +123,7 @@ func (this *FullIndexer) Setup(logger logger.LogContext, cluster cluster.Interfa
 	return nil
 }
 
-func (this *FullIndexer) Set(m *Machine) error {
+func (this *BMCFullIndexer) Set(m *BaseBoardManagementController) error {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 
@@ -131,7 +135,7 @@ func (this *FullIndexer) Set(m *Machine) error {
 	return nil
 }
 
-func (this *FullIndexer) Delete(name resources.ObjectName) {
+func (this *BMCFullIndexer) Delete(name resources.ObjectName) {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 	old := this.elements[name]
@@ -140,17 +144,15 @@ func (this *FullIndexer) Delete(name resources.ObjectName) {
 	}
 }
 
-func (this *FullIndexer) cleanup(m *Machine) {
-	for _, n := range m.NICs {
-		delete(this.byMACs, n.MAC)
-	}
+func (this *BMCFullIndexer) cleanup(m *BaseBoardManagementController) {
+	delete(this.byMACs, m.MAC)
 	delete(this.byUUIDs, m.UUID)
 	delete(this.elements, m.Name)
 }
 
-func (this *FullIndexer) set(m *Machine) {
-	for _, n := range m.NICs {
-		this.byMACs[n.MAC] = m
+func (this *BMCFullIndexer) set(m *BaseBoardManagementController) {
+	if m.MAC != "" {
+		this.byMACs[m.MAC] = m
 	}
 	if m.UUID != "" {
 		this.byUUIDs[m.UUID] = m

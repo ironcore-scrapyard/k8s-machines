@@ -40,6 +40,7 @@ spec:
           spec:
             properties:
               cpus:
+                description: CPU information
                 items:
                   properties:
                     bogoMips:
@@ -71,6 +72,7 @@ spec:
                   type: object
                 type: array
               memory:
+                description: Memory information
                 items:
                   properties:
                     numa:
@@ -84,6 +86,7 @@ spec:
                   type: object
                 type: array
               nics:
+                description: Network interfaces
                 items:
                   properties:
                     bandwidth:
@@ -98,6 +101,7 @@ spec:
                   type: object
                 type: array
               uuid:
+                description: UUID of Machine
                 type: string
               values:
                 description: Values is used to specify an arbitrary document structure without the need of a regular manifest api group version as part of a kubernetes resource

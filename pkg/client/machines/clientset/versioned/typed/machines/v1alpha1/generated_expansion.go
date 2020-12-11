@@ -23,4 +23,6 @@
 
 package v1alpha1
 
+type BaseBoardManagementControllerInfoExpansion interface{}
+
 type MachineInfoExpansion interface{}

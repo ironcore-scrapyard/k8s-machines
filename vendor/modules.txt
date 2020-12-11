@@ -23,10 +23,14 @@ github.com/fsnotify/fsnotify
 ## explicit
 github.com/gardener/controller-manager-library/hack
 github.com/gardener/controller-manager-library/pkg/certmgmt
+github.com/gardener/controller-manager-library/pkg/certmgmt/secret
 github.com/gardener/controller-manager-library/pkg/certs
+github.com/gardener/controller-manager-library/pkg/certs/access
+github.com/gardener/controller-manager-library/pkg/certs/file
 github.com/gardener/controller-manager-library/pkg/config
 github.com/gardener/controller-manager-library/pkg/configmain
 github.com/gardener/controller-manager-library/pkg/controllermanager
+github.com/gardener/controller-manager-library/pkg/controllermanager/cert
 github.com/gardener/controller-manager-library/pkg/controllermanager/cluster
 github.com/gardener/controller-manager-library/pkg/controllermanager/config
 github.com/gardener/controller-manager-library/pkg/controllermanager/controller
@@ -37,6 +41,11 @@ github.com/gardener/controller-manager-library/pkg/controllermanager/controller/
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension/groups
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension/mappings
+github.com/gardener/controller-manager-library/pkg/controllermanager/server
+github.com/gardener/controller-manager-library/pkg/controllermanager/server/config
+github.com/gardener/controller-manager-library/pkg/controllermanager/server/groups
+github.com/gardener/controller-manager-library/pkg/controllermanager/server/handler
+github.com/gardener/controller-manager-library/pkg/controllermanager/server/mappings
 github.com/gardener/controller-manager-library/pkg/convert
 github.com/gardener/controller-manager-library/pkg/ctxutil
 github.com/gardener/controller-manager-library/pkg/errors
@@ -279,6 +288,8 @@ google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/fsnotify.v1 v1.4.7
+gopkg.in/fsnotify.v1
 # gopkg.in/inf.v0 v0.9.1
 gopkg.in/inf.v0
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7

@@ -38,15 +38,15 @@ type reconciler struct {
 	controller controller.Interface
 	config     *Config
 
-	machines machines.MachineIndexer
+	indexer machines.MachineIndexer
 }
 
 var _ reconcile.Interface = &reconciler{}
 
 func (this *reconciler) Setup() error {
-	err := this.machines.Setup(this.controller, this.controller.GetMainCluster())
+	err := this.indexer.Setup(this.controller, this.controller.GetMainCluster())
 	if err == nil {
-		controllers.PropagateMachineInfos(this.machines)
+		controllers.PropagateMachineIndex(this.indexer)
 	}
 	return err
 }
@@ -62,13 +62,13 @@ func (this *reconciler) Reconcile(logger logger.LogContext, obj resources.Object
 
 	m, err, err2 := machines.ValidateMachine(logger, obj)
 	if err == nil {
-		this.machines.Set(m)
+		this.indexer.Set(m)
 	}
 	return reconcile.DelayOnError(logger, err2)
 }
 
 func (this *reconciler) Deleted(logger logger.LogContext, key resources.ClusterObjectKey) reconcile.Status {
 	logger.Infof("deleted")
-	this.machines.Delete(key.ObjectName())
+	this.indexer.Delete(key.ObjectName())
 	return reconcile.Succeeded(logger)
 }

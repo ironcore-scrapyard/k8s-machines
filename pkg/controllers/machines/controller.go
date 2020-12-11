@@ -40,7 +40,6 @@ func init() {
 		DefaultWorkerPool(5, 0).
 		OptionsByExample("options", &Config{}).
 		MainResourceByGK(api.MACHINEINFO).
-		CustomResourceDefinitions(api.MACHINEINFO).
 		MustRegister(controllers.GROUP_MACHINES)
 }
 
@@ -53,7 +52,7 @@ func Create(controller controller.Interface) (reconcile.Interface, error) {
 	this := &reconciler{
 		controller: controller,
 		config:     config,
-		machines:   controllers.GetOrCreateMachineIndex(controller.GetEnvironment()),
+		indexer:    controllers.GetOrCreateMachineIndex(controller.GetEnvironment()),
 	}
 	return this, nil
 }

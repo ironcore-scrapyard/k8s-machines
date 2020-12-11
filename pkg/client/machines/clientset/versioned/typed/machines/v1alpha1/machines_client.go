@@ -31,12 +31,17 @@ import (
 
 type MachinesV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	BaseBoardManagementControllerInfosGetter
 	MachineInfosGetter
 }
 
 // MachinesV1alpha1Client is used to interact with features provided by the machines.onmetal.de group.
 type MachinesV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *MachinesV1alpha1Client) BaseBoardManagementControllerInfos(namespace string) BaseBoardManagementControllerInfoInterface {
+	return newBaseBoardManagementControllerInfos(c, namespace)
 }
 
 func (c *MachinesV1alpha1Client) MachineInfos(namespace string) MachineInfoInterface {

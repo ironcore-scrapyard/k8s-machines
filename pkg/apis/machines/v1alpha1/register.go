@@ -37,6 +37,7 @@ const (
 )
 
 var MACHINEINFO = resources.NewGroupKind(GroupName, "MachineInfo")
+var BASEBOARDMANAGEMENTCONTROLLERINFO = resources.NewGroupKind(GroupName, "BaseBoardManagementControllerInfo")
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: Version}
@@ -61,6 +62,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&MachineInfo{},
 		&MachineInfoList{},
+		&BaseBoardManagementControllerInfo{},
+		&BaseBoardManagementControllerInfoList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

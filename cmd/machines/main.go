@@ -27,7 +27,9 @@ import (
 
 	_ "github.com/gardener/controller-manager-library/pkg/resources/defaultscheme/v1.16"
 
+	_ "github.com/onmetal/k8s-machines/pkg/controllers/bmc"
 	_ "github.com/onmetal/k8s-machines/pkg/controllers/machines"
+	_ "github.com/onmetal/k8s-machines/pkg/servers/machineindexer"
 )
 
 func main() {

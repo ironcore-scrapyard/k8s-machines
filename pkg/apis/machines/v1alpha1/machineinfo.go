@@ -58,12 +58,16 @@ type MachineInfo struct {
 }
 
 type MachineInfoSpec struct {
+	// UUID of Machine
 	// +optional
 	UUID string `json:"uuid,omitempty"`
+	// Network interfaces
 	// +optional
 	NICs []NIC `json:"nics,omitempty"`
+	// CPU information
 	// +optional
 	CPUs []CPU `json:"cpus,omitempty"`
+	// Memory information
 	// +optional
 	Memory []Memory `json:"memory,omitempty"`
 	// +optional
