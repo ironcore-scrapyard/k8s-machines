@@ -26,18 +26,16 @@ for v in $(IFS=,; echo $APIVERSION); do
   VPATHS="$VPATHS,$PKGPATH/pkg/apis/$APINAME/$v"
 done
 
-bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
+bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-groups.sh \
   deepcopy,client,informer,lister,defaulter \
   $PKGPATH/pkg/client/$APINAME \
-  $PKGPATH/pkg/apis \
   $PKGPATH/pkg/apis \
   "$APINAME:$APIVERSION" \
   --go-header-file "$(dirname $0)/LICENSE_BOILERPLATE.txt"
 
-bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
+bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-groups.sh \
   conversion \
   $PKGPATH/pkg/client/$APINAME \
-  $PKGPATH/pkg/apis \
   $PKGPATH/pkg/apis \
   "$APINAME:$APIVERSION" \
   --extra-peer-dirs=$VPATHS,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/conversion,k8s.io/apimachinery/pkg/runtime \

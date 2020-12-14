@@ -116,6 +116,7 @@ github.com/gardener/controller-manager-library v0.1.1-0.20200601204841-b7ca2069c
 github.com/gardener/controller-manager-library v0.1.1-0.20200601204841-b7ca2069cc40/go.mod h1:oCK7fW2VpsMhmUh5c6cOhsN8p9Tth1OM3rRtogDF11k=
 github.com/gardener/controller-manager-library v0.1.1-0.20200601205834-31de0b23fdbc h1:9WDIhENJyfGEQObDWBAfv8eU3xSuQWpT99cyHW1/emk=
 github.com/gardener/controller-manager-library v0.1.1-0.20200601205834-31de0b23fdbc/go.mod h1:oCK7fW2VpsMhmUh5c6cOhsN8p9Tth1OM3rRtogDF11k=
+github.com/gardener/controller-manager-library v0.2.0 h1:MyxL0k10lwBf8TXkbnuN+oEOkHwCNhp3SKj+ad2w62s=
 github.com/gardener/controller-manager-library v0.2.1-0.20201009144316-bfa57b871e60 h1:JONXsPxZeieknWEiqPy07HWMUsBBaLSTNN5yXLF90js=
 github.com/gardener/controller-manager-library v0.2.1-0.20201009144316-bfa57b871e60/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
 github.com/gardener/controller-manager-library v0.2.1-0.20201210114145-d2cb954300ab h1:8vkR6r7xjj5TBhvGei4fJkwJzyfWApkIxALhfk4CSGI=
@@ -126,6 +127,16 @@ github.com/gardener/controller-manager-library v0.2.1-0.20201210145717-bde2e5a1c
 github.com/gardener/controller-manager-library v0.2.1-0.20201210145717-bde2e5a1ce25/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
 github.com/gardener/controller-manager-library v0.2.1-0.20201210150244-e1773318c71b h1:sEWry15c5NrIRf1GIfcF5jbUNhCadHTAxshgPkp2U4I=
 github.com/gardener/controller-manager-library v0.2.1-0.20201210150244-e1773318c71b/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
+github.com/gardener/controller-manager-library v0.2.1-0.20201213140642-ecbb45296ff9 h1:Uq0LZC0z8SCOEom0qH6S2LUhdXN0lD2kv+VAyHIA+dg=
+github.com/gardener/controller-manager-library v0.2.1-0.20201213140642-ecbb45296ff9/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214104322-68621909b491 h1:6kA+QbcCdw+XyiWadVZ3l/nA/AGyiktAl5Hj3gLHC4w=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214104322-68621909b491/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214110447-bfab5c601cb9 h1:UScByoDuzIuG+VRT8PkGI9PnzzouldRezU0ZDMvalQg=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214110447-bfab5c601cb9/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214135615-2c516095965f h1:9RsMjktir15hUVH/kE9CiRWUIuMOdNBTUdyrUnfVFGY=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214135615-2c516095965f/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214164354-71bf7cd5c349 h1:dcVLU5hzqD7ni8Fq8jR3RVT3rzKIR6sYCA/axWaktEM=
+github.com/gardener/controller-manager-library v0.2.1-0.20201214164354-71bf7cd5c349/go.mod h1:XMp1tPcX3SP/dMd+3id418f5Cqu44vydeTkBRbW8EvQ=
 github.com/ghodss/yaml v0.0.0-20150909031657-73d445a93680/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=

@@ -1,5 +1,5 @@
-EXECUTABLE=kipxe
-PROJECT=github.com/mandelsoft/kipxe
+EXECUTABLE=machines
+PROJECT=github.com/onmetal/k8s-machines
 VERSION=$(shell cat VERSION)
 
 RELEASE                     := true
@@ -7,7 +7,7 @@ NAME                        := k8s-machines
 REPOSITORY                  := github.com/onmetal/k8s-machines
 #REGISTRY                    := eu.gcr.io/gardener-project
 REGISTRY                    :=
-IMAGEORG                    := mandelsoft
+IMAGEORG                    := onmetal
 IMAGE_PREFIX                := $(REGISTRY)$(IMAGEORG)
 REPO_ROOT                   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 HACK_DIR                    := $(REPO_ROOT)/hack

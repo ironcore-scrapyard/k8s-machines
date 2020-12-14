@@ -31,7 +31,9 @@ const NAME = "machineindex"
 
 func init() {
 	server.Configure(NAME).
+		Port(8090).
 		RegisterHandler("index", Create).
+		ActivateExplicitly().
 		MustRegister()
 }
 

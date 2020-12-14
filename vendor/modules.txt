@@ -19,7 +19,7 @@ github.com/evanphx/json-patch
 github.com/fatih/color
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
-# github.com/gardener/controller-manager-library v0.2.1-0.20201210150244-e1773318c71b
+# github.com/gardener/controller-manager-library v0.2.1-0.20201214164354-71bf7cd5c349
 ## explicit
 github.com/gardener/controller-manager-library/hack
 github.com/gardener/controller-manager-library/pkg/certmgmt
@@ -41,6 +41,11 @@ github.com/gardener/controller-manager-library/pkg/controllermanager/controller/
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension/groups
 github.com/gardener/controller-manager-library/pkg/controllermanager/extension/mappings
+github.com/gardener/controller-manager-library/pkg/controllermanager/module
+github.com/gardener/controller-manager-library/pkg/controllermanager/module/config
+github.com/gardener/controller-manager-library/pkg/controllermanager/module/groups
+github.com/gardener/controller-manager-library/pkg/controllermanager/module/handler
+github.com/gardener/controller-manager-library/pkg/controllermanager/module/mappings
 github.com/gardener/controller-manager-library/pkg/controllermanager/server
 github.com/gardener/controller-manager-library/pkg/controllermanager/server/config
 github.com/gardener/controller-manager-library/pkg/controllermanager/server/groups

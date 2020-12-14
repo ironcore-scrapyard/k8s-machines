@@ -42,10 +42,10 @@ type requesthandler struct {
 }
 
 func (this *requesthandler) Setup() error {
-	this.machineindex = controllers.GetOrCreateMachineIndex(this.server.GetEnvironment())
-	this.bmcindex = controllers.GetOrCreateBMCIndex(this.server.GetEnvironment())
-	this.server.Register("info", this.machineInfo)
-	this.server.Register("bmc", this.bmcInfo)
+	this.machineindex = controllers.GetOrCreateMachineIndex(this.server.GetEnvironment(), func() machines.MachineIndex { return machines.NewFullIndexer() })
+	this.bmcindex = controllers.GetOrCreateBMCIndex(this.server.GetEnvironment(), func() machines.BMCIndex { return machines.NewBMCFullIndexer() })
+	this.server.Register(machines.PATH_MACHINEINFO, this.machineInfo)
+	this.server.Register(machines.PATH_BMCINFO, this.bmcInfo)
 	return nil
 }
 

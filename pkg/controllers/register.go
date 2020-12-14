@@ -35,16 +35,16 @@ import (
 
 var key = ctxutil.SimpleKey("machineindex")
 
-func GetOrCreateMachineIndex(env extension.Environment) machines.MachineIndexer {
+func GetOrCreateMachineIndex(env extension.Environment, indexcreator func() machines.MachineIndex) machines.MachineIndex {
 	return env.ControllerManager().GetOrCreateSharedValue(key, func() interface{} {
-		return machines.NewFullIndexer()
-	}).(machines.MachineIndexer)
+		return indexcreator()
+	}).(machines.MachineIndex)
 }
 
-func GetMachineIndex(env extension.Environment) machines.MachineIndexer {
+func GetMachineIndex(env extension.Environment) machines.MachineIndex {
 	i := env.ControllerManager().GetSharedValue(key)
 	if i != nil {
-		return i.(machines.MachineIndexer)
+		return i.(machines.MachineIndex)
 	}
 	return nil
 }
@@ -53,16 +53,16 @@ func GetMachineIndex(env extension.Environment) machines.MachineIndexer {
 
 var bmckey = ctxutil.SimpleKey("bmcindex")
 
-func GetOrCreateBMCIndex(env extension.Environment) machines.BMCIndexer {
+func GetOrCreateBMCIndex(env extension.Environment, indexcreator func() machines.BMCIndex) machines.BMCIndex {
 	return env.ControllerManager().GetOrCreateSharedValue(bmckey, func() interface{} {
-		return machines.NewBMCFullIndexer()
-	}).(machines.BMCIndexer)
+		return indexcreator()
+	}).(machines.BMCIndex)
 }
 
-func GetBMCIndex(env extension.Environment) machines.BMCIndexer {
+func GetBMCIndex(env extension.Environment) machines.BMCIndex {
 	i := env.ControllerManager().GetSharedValue(bmckey)
 	if i != nil {
-		return i.(machines.BMCIndexer)
+		return i.(machines.BMCIndex)
 	}
 	return nil
 }

@@ -26,6 +26,7 @@ import (
 	"github.com/onmetal/k8s-machines/pkg/apis/machines/crds"
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 	"github.com/onmetal/k8s-machines/pkg/controllers"
+	"github.com/onmetal/k8s-machines/pkg/machines"
 )
 
 const NAME = "bmcinfos"
@@ -37,7 +38,7 @@ func init() {
 func init() {
 	controller.Configure(NAME).
 		Reconciler(Create).
-		DefaultWorkerPool(5, 0).
+		DefaultWorkerPool(2, 0).
 		OptionsByExample("options", &Config{}).
 		MainResourceByGK(api.BASEBOARDMANAGEMENTCONTROLLERINFO).
 		MustRegister(controllers.GROUP_MACHINES)
@@ -52,7 +53,7 @@ func Create(controller controller.Interface) (reconcile.Interface, error) {
 	this := &reconciler{
 		controller: controller,
 		config:     config,
-		indexer:    controllers.GetOrCreateBMCIndex(controller.GetEnvironment()),
+		indexer:    controllers.GetOrCreateBMCIndex(controller.GetEnvironment(), func() machines.BMCIndex { return machines.NewBMCFullIndexer() }).(machines.BMCIndexer),
 	}
 	return this, nil
 }
