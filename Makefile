@@ -3,11 +3,11 @@ PROJECT=github.com/onmetal/k8s-machines
 VERSION=$(shell cat VERSION)
 
 RELEASE                     := true
-NAME                        := k8s-machines
+NAME                        := machines
 REPOSITORY                  := github.com/onmetal/k8s-machines
 #REGISTRY                    := eu.gcr.io/gardener-project
 REGISTRY                    :=
-IMAGEORG                    := onmetal
+IMAGEORG                    := mandelsoft
 IMAGE_PREFIX                := $(REGISTRY)$(IMAGEORG)
 REPO_ROOT                   := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 HACK_DIR                    := $(REPO_ROOT)/hack
@@ -75,3 +75,15 @@ generate:
 	@go generate ./pkg/...
 
 
+.PHONY: images-dev
+images-dev:
+	@docker build -t $(IMAGE_PREFIX)/$(NAME):$(VERSION)-$(COMMIT) -t $(IMAGE_PREFIX)/$(NAME):latest -f Dockerfile -m 6g --build-arg TARGETS=dev --target image .
+	@docker push $(IMAGE_PREFIX)/$(NAME):latest
+
+.PHONY: images-release
+images-release:
+	@docker build -t $(IMAGE_PREFIX)/$(NAME):$(VERSION) -t $(IMAGE_PREFIX)/$(NAME):latest -f Dockerfile -m 6g --build-arg TARGETS=release --target image .
+
+.PHONY: images-release-all
+images-release-all:
+	@docker build -t $(IMAGE_PREFIX)/$(NAME):$(VERSION) -t $(IMAGE_PREFIX)/$(NAME):latest -f Dockerfile -m 6g --build-arg TARGETS=release-all --target image .
