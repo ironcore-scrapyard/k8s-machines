@@ -41,6 +41,10 @@ func (c *FakeMachinesV1alpha1) MachineInfos(namespace string) v1alpha1.MachineIn
 	return &FakeMachineInfos{c, namespace}
 }
 
+func (c *FakeMachinesV1alpha1) MachineTypes(namespace string) v1alpha1.MachineTypeInterface {
+	return &FakeMachineTypes{c, namespace}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeMachinesV1alpha1) RESTClient() rest.Interface {

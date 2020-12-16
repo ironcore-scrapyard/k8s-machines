@@ -39,6 +39,7 @@ import (
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
+const PATH_MACHINETYPE = "type"
 const PATH_MACHINEINFO = "info"
 const PATH_BMCINFO = "bmc"
 

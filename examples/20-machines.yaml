@@ -1,0 +1,172 @@
+#
+# service account
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+  namespace: metal
+---
+#
+# permissions
+#
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+rules:
+  - apiGroups:
+      - machines.onmetal.de
+    resources:
+      - baseboardmanagementcontrollerinfos
+      - baseboardmanagementcontrollerinfos/status
+      - machineinfos
+      - machineinfos/status
+    verbs:
+      - get
+      - list
+      - update
+      - watch
+
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - update
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+  namespace: metal
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      # lease for controller manager
+      - machines-controller-manager
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: machinesindexer
+subjects:
+  - kind: ServiceAccount
+    name: machinesindexer
+    namespace: metal
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+  namespace: metal
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: machinesindexer
+subjects:
+  - kind: ServiceAccount
+    name: machinesindexer
+    namespace: metal
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    #dns.gardener.cloud/class: gardendns
+    #dns.gardener.cloud/dnsnames:
+    #dns.gardener.cloud/ttl: "500"
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+  namespace: metal
+spec:
+  #externalTrafficPolicy: Cluster
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8090
+  selector:
+    app: machinesindexer
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: machinesindexer
+  name: machinesindexer
+  namespace: metal
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: machinesindexer
+        component: machines-controller-manager
+    spec:
+      containers:
+        - name: controller-manager
+          image: mandelsoft/machines:latest
+          imagePullPolicy: "Always"
+          args:
+            - --controllers=all
+            - --servers=all
+            - --server-port-http=8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8090
+              protocol: TCP
+          resources: {}
+      serviceAccountName: machinesindexer
+      terminationGracePeriodSeconds: 120

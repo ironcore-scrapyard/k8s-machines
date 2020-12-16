@@ -31,6 +31,7 @@ import (
 	//register indexer
 	_ "github.com/onmetal/k8s-machines/pkg/servers/machineindexer/bmcinfo"
 	_ "github.com/onmetal/k8s-machines/pkg/servers/machineindexer/machineinfo"
+	_ "github.com/onmetal/k8s-machines/pkg/servers/machineindexer/machinetype"
 )
 
 func main() {

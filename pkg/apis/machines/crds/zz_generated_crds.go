@@ -340,6 +340,98 @@ status:
   storedVersions: []
   `
 	utils.Must(registry.RegisterCRD(data))
+	data = `
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.9
+  creationTimestamp: null
+  name: machinetypes.machines.onmetal.de
+spec:
+  group: machines.onmetal.de
+  names:
+    kind: MachineType
+    listKind: MachineTypeList
+    plural: machinetypes
+    shortNames:
+    - macht
+    singular: machinetype
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.manufacturer
+      name: Manufacturer
+      type: string
+    - jsonPath: .spec.type
+      name: Type
+      type: string
+    - jsonPath: .status.state
+      name: State
+      type: string
+    - description: max prefixes
+      jsonPath: .spec.macPrefixes
+      name: Prefixes
+      priority: 2000
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              macPrefixes:
+                description: MAC Prefixes to identify machine type
+                items:
+                  type: string
+                type: array
+              manufacturer:
+                description: Manucaturer of a Machine
+                type: string
+              type:
+                description: Type of a machine
+                type: string
+              values:
+                description: Values is used to specify an arbitrary document structure without the need of a regular manifest api group version as part of a kubernetes resource
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+            required:
+            - macPrefixes
+            - manufacturer
+            - type
+            type: object
+          status:
+            properties:
+              message:
+                type: string
+              state:
+                type: string
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+  `
+	utils.Must(registry.RegisterCRD(data))
 }
 
 func AddToRegistry(r apiextensions.Registry) {

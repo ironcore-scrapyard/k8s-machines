@@ -67,18 +67,26 @@ func (this *MACPrefix) Contains(m MAC) bool {
 }
 
 func ParseMACPrefix(s string) (*MACPrefix, error) {
+	var l int
+
 	i := strings.Index(s, "/")
 	if i < 0 {
-		return nil, fmt.Errorf("%q is no MAC Prefix", s)
+		i = len(s)
 	}
 
 	m, err := parseMACPart(s[:i])
 	if err != nil {
 		return nil, err
 	}
+	if i == len(s) {
+		l = len(m) * 8
+	} else {
+		var _l int64
+		_l, err = strconv.ParseInt(s[i+1:], 10, 8)
+		l = int(_l)
 
-	_l, err := strconv.ParseInt(s[i+1:], 10, 8)
-	l := int(_l)
+	}
+
 	if err != nil || l > 20*8 || l < 0 {
 		return nil, fmt.Errorf("incalid length %q", s[i+1:])
 	}

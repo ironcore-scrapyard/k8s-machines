@@ -23,6 +23,8 @@
 package v1alpha1
 
 import (
+	"reflect"
+
 	"github.com/gardener/controller-manager-library/pkg/resources"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -36,8 +38,9 @@ const (
 	GroupName = machines.GroupName
 )
 
-var MACHINEINFO = resources.NewGroupKind(GroupName, "MachineInfo")
-var BASEBOARDMANAGEMENTCONTROLLERINFO = resources.NewGroupKind(GroupName, "BaseBoardManagementControllerInfo")
+var MACHINETYPE = resources.NewGroupKind(GroupName, reflect.TypeOf(MachineType{}).Name())
+var MACHINEINFO = resources.NewGroupKind(GroupName, reflect.TypeOf(MachineInfo{}).Name())
+var BASEBOARDMANAGEMENTCONTROLLERINFO = resources.NewGroupKind(GroupName, reflect.TypeOf(BaseBoardManagementControllerInfo{}).Name())
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: Version}
@@ -60,6 +63,8 @@ var (
 // Adds the list of known types to Scheme.
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
+		&MachineType{},
+		&MachineTypeList{},
 		&MachineInfo{},
 		&MachineInfoList{},
 		&BaseBoardManagementControllerInfo{},

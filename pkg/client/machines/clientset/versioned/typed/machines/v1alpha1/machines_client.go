@@ -33,6 +33,7 @@ type MachinesV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	BaseBoardManagementControllerInfosGetter
 	MachineInfosGetter
+	MachineTypesGetter
 }
 
 // MachinesV1alpha1Client is used to interact with features provided by the machines.onmetal.de group.
@@ -46,6 +47,10 @@ func (c *MachinesV1alpha1Client) BaseBoardManagementControllerInfos(namespace st
 
 func (c *MachinesV1alpha1Client) MachineInfos(namespace string) MachineInfoInterface {
 	return newMachineInfos(c, namespace)
+}
+
+func (c *MachinesV1alpha1Client) MachineTypes(namespace string) MachineTypeInterface {
+	return newMachineTypes(c, namespace)
 }
 
 // NewForConfig creates a new MachinesV1alpha1Client for the given config.

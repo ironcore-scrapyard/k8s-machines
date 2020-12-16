@@ -44,46 +44,58 @@ var _ = Describe("Mac Addresses", func() {
 
 			Expect(p.String()).To(Equal("20:00:00:00:00:00/4"))
 		})
+		It("handle implicit length 1", func() {
+			p, err := ParseMACPrefix("20")
+			Expect(err).To(BeNil())
+
+			Expect(p.String()).To(Equal("20:00:00:00:00:00/8"))
+		})
+		It("handle implicit length 2", func() {
+			p, err := ParseMACPrefix("20:21")
+			Expect(err).To(BeNil())
+
+			Expect(p.String()).To(Equal("20:21:00:00:00:00/16"))
+		})
 	})
 
-	Context("Prefix Containss", func() {
+	Context("Prefix Contains", func() {
 		mac1, _ := ParseMAC("21:22:23:24:25:16")
 		mac2, _ := ParseMAC("31:22:23:24:25:16")
 		mac3, _ := ParseMAC("21:80:23:24:25:16")
 		mac4, _ := ParseMAC("22:80:23:24:25:16")
 
-		It("handle single byte prefix", func() {
+		It("handle partial single byte prefix", func() {
 			p, err := ParseMACPrefix("20/4")
 			Expect(err).To(BeNil())
 
 			Expect(p.Contains(mac1)).To(BeTrue())
 		})
-		It("handle single byte prefix", func() {
+		It("handle complete single byte prefix", func() {
 			p, err := ParseMACPrefix("20/8")
 			Expect(err).To(BeNil())
 
 			Expect(p.Contains(mac1)).To(BeFalse())
 		})
 
-		It("handle single byte prefix", func() {
+		It("handle failed partial single byte prefix", func() {
 			p, err := ParseMACPrefix("20/4")
 			Expect(err).To(BeNil())
 
 			Expect(p.Contains(mac2)).To(BeFalse())
 		})
-		It("handle single byte prefix", func() {
+		It("handle single byte prefix (additional bits)", func() {
 			p, err := ParseMACPrefix("20/4")
 			Expect(err).To(BeNil())
 
 			Expect(p.Contains(mac4)).To(BeTrue())
 		})
-		It("handle single byte prefix", func() {
+		It("handle complete single byte prefix", func() {
 			p, err := ParseMACPrefix("20/8")
 			Expect(err).To(BeNil())
 
 			Expect(p.Contains(mac4)).To(BeFalse())
 		})
-		It("handle single byte prefix", func() {
+		It("handle failed complete single byte prefix", func() {
 			p, err := ParseMACPrefix("21/8")
 			Expect(err).To(BeNil())
 

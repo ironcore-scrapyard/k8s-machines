@@ -33,16 +33,34 @@ import (
 
 ////////////////////////////////////////////////////////////////////////////////
 
-var key = ctxutil.SimpleKey("machineindex")
+var typekey = ctxutil.SimpleKey("machineindex")
+
+func GetOrCreateMachineTypeIndex(env extension.Environment, indexcreator func() machines.MachineTypeIndex) machines.MachineTypeIndex {
+	return env.ControllerManager().GetOrCreateSharedValue(typekey, func() interface{} {
+		return indexcreator()
+	}).(machines.MachineTypeIndex)
+}
+
+func GetMachineTypeIndex(env extension.Environment) machines.MachineTypeIndex {
+	i := env.ControllerManager().GetSharedValue(typekey)
+	if i != nil {
+		return i.(machines.MachineTypeIndex)
+	}
+	return nil
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+var infokey = ctxutil.SimpleKey("machineindex")
 
 func GetOrCreateMachineIndex(env extension.Environment, indexcreator func() machines.MachineIndex) machines.MachineIndex {
-	return env.ControllerManager().GetOrCreateSharedValue(key, func() interface{} {
+	return env.ControllerManager().GetOrCreateSharedValue(infokey, func() interface{} {
 		return indexcreator()
 	}).(machines.MachineIndex)
 }
 
 func GetMachineIndex(env extension.Environment) machines.MachineIndex {
-	i := env.ControllerManager().GetSharedValue(key)
+	i := env.ControllerManager().GetSharedValue(infokey)
 	if i != nil {
 		return i.(machines.MachineIndex)
 	}

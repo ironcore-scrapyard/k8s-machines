@@ -33,6 +33,8 @@ type Interface interface {
 	BaseBoardManagementControllerInfos() BaseBoardManagementControllerInfoInformer
 	// MachineInfos returns a MachineInfoInformer.
 	MachineInfos() MachineInfoInformer
+	// MachineTypes returns a MachineTypeInformer.
+	MachineTypes() MachineTypeInformer
 }
 
 type version struct {
@@ -54,4 +56,9 @@ func (v *version) BaseBoardManagementControllerInfos() BaseBoardManagementContro
 // MachineInfos returns a MachineInfoInformer.
 func (v *version) MachineInfos() MachineInfoInformer {
 	return &machineInfoInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// MachineTypes returns a MachineTypeInformer.
+func (v *version) MachineTypes() MachineTypeInformer {
+	return &machineTypeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

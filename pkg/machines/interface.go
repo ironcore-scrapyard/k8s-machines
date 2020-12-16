@@ -31,6 +31,28 @@ import (
 )
 
 ////////////////////////////////////////////////////////////////////////////////
+// MachineType Info
+
+type MachineType struct {
+	Name resources.ObjectName
+	*api.MachineTypeSpec
+	prefixes []*MACPrefix
+}
+
+type MachineTypeIndexer interface {
+	MachineTypeIndex
+	Setup(logger logger.LogContext, cluster cluster.Interface) error
+	Set(m *MachineType) error
+	Delete(name resources.ObjectName)
+}
+
+type MachineTypeIndex interface {
+	IsInitialized() bool
+	GetByMAC(mac string) *MachineType
+	GetByName(name resources.ObjectName) *MachineType
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Machine Info
 
 type Machine struct {
