@@ -23,43 +23,45 @@
 package machineindexer
 
 import (
-	"fmt"
 	"net/http"
+	"sync"
 
+	"github.com/gardener/controller-manager-library/pkg/controllermanager/module/handler"
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/server"
 	"github.com/gardener/controller-manager-library/pkg/resources"
 )
 
-const CONTENT_TYPE = "Content-Type"
+type Interface = handler.SetupInterface
 
-type requesthandler struct {
+type IndexServer interface {
 	server.Interface
-	indexers []Interface
+	MachineIds(r *http.Request) ([]string, []string)
+	ObjectResponse(w http.ResponseWriter, n resources.ObjectName)
 }
 
-func (this *requesthandler) Setup() error {
-	for _, t := range defaultRegistry.handlers {
-		h, err := t(this)
-		if err != nil {
-			return err
-		}
-		this.indexers = append(this.indexers, h)
-		err = h.Setup()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+type IndexHandlerType func(IndexServer) (Interface, error)
+
+type Registry interface {
+	RegisterIndex(t IndexHandlerType)
 }
 
-func (this *requesthandler) MachineIds(r *http.Request) ([]string, []string) {
-	values := r.URL.Query()
-	this.Infof("  found uuids: %v", values["uuid"])
-	this.Infof("  found macs : %v", values["mac"])
-	return values["uuid"], values["mac"]
+type registry struct {
+	lock     sync.Mutex
+	handlers []IndexHandlerType
 }
 
-func (this *requesthandler) ObjectResponse(w http.ResponseWriter, n resources.ObjectName) {
-	r := fmt.Sprintf("{ \"name\": \"%s\", \"namespace\": \"%s\" }", n.Name(), n.Namespace())
-	w.Write([]byte(r))
+func NewRegistry() *registry {
+	return &registry{}
+}
+
+func (this *registry) RegisterIndex(t IndexHandlerType) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+	this.handlers = append(this.handlers, t)
+}
+
+var defaultRegistry = NewRegistry()
+
+func RegisterIndex(t IndexHandlerType) {
+	defaultRegistry.RegisterIndex(t)
 }

@@ -20,46 +20,16 @@
  * SOFTWARE.
  */
 
-package machineindexer
+package machines
 
 import (
-	"fmt"
-	"net/http"
+	"testing"
 
-	"github.com/gardener/controller-manager-library/pkg/controllermanager/server"
-	"github.com/gardener/controller-manager-library/pkg/resources"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-const CONTENT_TYPE = "Content-Type"
-
-type requesthandler struct {
-	server.Interface
-	indexers []Interface
-}
-
-func (this *requesthandler) Setup() error {
-	for _, t := range defaultRegistry.handlers {
-		h, err := t(this)
-		if err != nil {
-			return err
-		}
-		this.indexers = append(this.indexers, h)
-		err = h.Setup()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (this *requesthandler) MachineIds(r *http.Request) ([]string, []string) {
-	values := r.URL.Query()
-	this.Infof("  found uuids: %v", values["uuid"])
-	this.Infof("  found macs : %v", values["mac"])
-	return values["uuid"], values["mac"]
-}
-
-func (this *requesthandler) ObjectResponse(w http.ResponseWriter, n resources.ObjectName) {
-	r := fmt.Sprintf("{ \"name\": \"%s\", \"namespace\": \"%s\" }", n.Name(), n.Namespace())
-	w.Write([]byte(r))
+func TestUtilsSuite(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Utils Suite")
 }

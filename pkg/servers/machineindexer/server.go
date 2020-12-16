@@ -37,6 +37,6 @@ func init() {
 		MustRegister()
 }
 
-func Create(server server.Interface) (handler.Interface, error) {
-	return &requesthandler{server: server}, nil
+func Create(srv server.Interface) (handler.Interface, error) {
+	return &requesthandler{Interface: srv}, nil
 }

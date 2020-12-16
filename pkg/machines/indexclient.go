@@ -216,7 +216,7 @@ func NewMachineIndexServerIndexCreator(logger logger.LogContext, cluster cluster
 	var url url.URL
 	url.Scheme = "http"
 	url.Host = fmt.Sprintf("%s:%d", host, port)
-	url.Path = "/"+PATH_MACHINEINFO
+	url.Path = "/" + PATH_MACHINEINFO
 
 	res, err := cluster.Resources().Get(api.MACHINEINFO)
 	if err != nil {
@@ -271,7 +271,7 @@ func NewBMCIndexServerIndexCreator(logger logger.LogContext, cluster cluster.Int
 	var url url.URL
 	url.Scheme = "http"
 	url.Host = fmt.Sprintf("%s:%d", host, port)
-	url.Path = "/"+PATH_BMCINFO
+	url.Path = "/" + PATH_BMCINFO
 
 	res, err := cluster.Resources().Get(api.BASEBOARDMANAGEMENTCONTROLLERINFO)
 	if err != nil {
