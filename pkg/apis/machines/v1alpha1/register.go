@@ -78,6 +78,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	return nil
 }
 
+// init registers api group version to default scheme used for resource management
 func init() {
 	resources.Register(SchemeBuilder)
 }

@@ -24,19 +24,13 @@ import (
 
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller"
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller/reconcile"
-	"github.com/gardener/controller-manager-library/pkg/resources/apiextensions"
 
-	"github.com/onmetal/k8s-machines/pkg/apis/machines/crds"
 	api "github.com/onmetal/k8s-machines/pkg/apis/machines/v1alpha1"
 )
 
 const NAME = "dhcpleases"
 
 const CMD_SCAN = "scan"
-
-func init() {
-	crds.AddToRegistry(apiextensions.DefaultRegistry())
-}
 
 func init() {
 	controller.Configure(NAME).

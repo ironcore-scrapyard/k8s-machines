@@ -26,6 +26,17 @@
 
 package machines
 
+import (
+	"github.com/gardener/controller-manager-library/pkg/resources/apiextensions"
+
+	"github.com/onmetal/k8s-machines/pkg/apis/machines/crds"
+)
+
 const (
 	GroupName = "machines.onmetal.de"
 )
+
+// init registers crds on api group usage
+func init() {
+	crds.AddToRegistry(apiextensions.DefaultRegistry())
+}
