@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package machines
+package leases
 
 import (
 	"fmt"
@@ -49,8 +49,7 @@ type reconciler struct {
 var _ reconcile.Interface = &reconciler{}
 
 func (this *reconciler) Start() error {
-	this.controller.EnqueueCommand(CMD_SCAN)
-	return nil
+	return this.leases.Start(this.controller)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

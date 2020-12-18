@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package machines
+package leases
 
 import (
 	"fmt"
@@ -30,10 +30,12 @@ import (
 )
 
 type Config struct {
-	LeaseFile string
+	Implementation string
+	LeaseFile      string
 }
 
 func (this *Config) AddOptionsToSet(set config.OptionSet) {
+	set.AddStringOption(&this.Implementation, "lease", "", "test", "lease implementation")
 	set.AddStringOption(&this.LeaseFile, "lease-file", "", "", "lease file to scan")
 }
 

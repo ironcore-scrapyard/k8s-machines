@@ -30,6 +30,10 @@ import (
 
 	//register lease controller
 	_ "github.com/onmetal/k8s-machines/pkg/controllers/leases"
+
+	// register lease implementations
+	_ "github.com/onmetal/k8s-machines/pkg/controllers/leases/iscleases"
+	_ "github.com/onmetal/k8s-machines/pkg/controllers/leases/leasestest"
 )
 
 func main() {

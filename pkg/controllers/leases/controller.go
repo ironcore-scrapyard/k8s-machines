@@ -16,9 +16,10 @@
  *
  */
 
-package machines
+package leases
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gardener/controller-manager-library/pkg/controllermanager/controller"
@@ -53,7 +54,10 @@ func Create(controller controller.Interface) (reconcile.Interface, error) {
 	cfg, _ := controller.GetOptionSource("options")
 	config := cfg.(*Config)
 
-	leases, err := NewLeaseManagement(config.LeaseFile)
+	if selected[config.Implementation] == nil {
+		return nil, fmt.Errorf("lease management %q not found")
+	}
+	leases, err := selected[config.Implementation](config.LeaseFile)
 	if err != nil {
 		return nil, err
 	}
