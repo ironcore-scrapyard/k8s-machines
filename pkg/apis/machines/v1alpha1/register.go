@@ -41,6 +41,7 @@ const (
 var MACHINETYPE = resources.NewGroupKind(GroupName, reflect.TypeOf(MachineType{}).Name())
 var MACHINEINFO = resources.NewGroupKind(GroupName, reflect.TypeOf(MachineInfo{}).Name())
 var BASEBOARDMANAGEMENTCONTROLLERINFO = resources.NewGroupKind(GroupName, reflect.TypeOf(BaseBoardManagementControllerInfo{}).Name())
+var DHCPLEASE = resources.NewGroupKind(GroupName, reflect.TypeOf(DHCPLease{}).Name())
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: Version}
@@ -69,6 +70,9 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&MachineInfoList{},
 		&BaseBoardManagementControllerInfo{},
 		&BaseBoardManagementControllerInfoList{},
+
+		&DHCPLease{},
+		&DHCPLeaseList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

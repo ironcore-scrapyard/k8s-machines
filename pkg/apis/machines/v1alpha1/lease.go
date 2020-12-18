@@ -23,92 +23,58 @@
 package v1alpha1
 
 import (
-	"github.com/gardener/controller-manager-library/pkg/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type MachineInfoList struct {
+type DHCPLeaseList struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard list metadata
 	// More info: http://releases.k8s.io/HEAD/docs/devel/api-conventions.md#metadata
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MachineInfo `json:"items"`
+	Items           []DHCPLease `json:"items"`
 }
 
 // +kubebuilder:storageversion
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:scope=Namespaced,shortName=machi,path=machineinfos,singular=machineinfo
+// +kubebuilder:resource:scope=Namespaced,shortName=dlease,path=ldhcpleases,singular=dhcplease
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name=UUID,JSONPath=".spec.uuid",type=string
+// +kubebuilder:printcolumn:name=Hostname,JSONPath=".spec.hostname",type=string,description="hostname of machine"
+// +kubebuilder:printcolumn:name=MAC,JSONPath=".spec.macAddress",type=string
+// +kubebuilder:printcolumn:name=IP,JSONPath=".spec.ipAddress",type=string
+// +kubebuilder:printcolumn:name=Granted,JSONPath=".spec.leaseTime",type=string,description="Time until the lease has been granted"
+// +kubebuilder:printcolumn:name=Expires,JSONPath=".spec.expireTime",type=string,description="Time until the lease is valid"
 // +kubebuilder:printcolumn:name=State,JSONPath=".status.state",type=string
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type MachineInfo struct {
+type DHCPLease struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              MachineInfoSpec `json:"spec"`
+	Spec              DHCPLeaseSpec `json:"spec"`
 	// +optional
-	Status MachineInfoStatus `json:"status,omitempty"`
+	Status DHCPLeaseStatus `json:"status,omitempty"`
 }
 
-type MachineInfoSpec struct {
-	// UUID of Machine
+type DHCPLeaseSpec struct {
+	// Machine Name
 	// +optional
-	UUID string `json:"uuid,omitempty"`
-	// Network interfaces
-	// +optional
-	NICs []NIC `json:"nics,omitempty"`
-	// CPU information
-	// +optional
-	CPUs []CPU `json:"cpus,omitempty"`
-	// Memory information
-	// +optional
-	Memory []Memory `json:"memory,omitempty"`
-	// +optional
-	Disks []Disk `json:"disks,omitempty"`
+	Hostname string `json:"hostname"`
+	// Assigned IP
+	IP string `json:"ipAddress"`
+	// MAC Address of requesting machine
+	MAC string `json:"macAddress"`
 
-	// +kubebuilder:validation:XPreserveUnknownFields
-	// +kubebuilder:pruning:PreserveUnknownFields
+	// Time until the lease is valid
 	// +optional
-	Values types.Values `json:"values,omitempty"`
+	LeaseTime metav1.Time `json:"leaseTime"`
+	// Time until the lease is valid
+	// +optional
+	ExpireTime metav1.Time `json:"expireTime"`
 }
 
-type NIC struct {
-	Name string `json:"name"`
-	MAC  string `json:"mac"`
-	// +optional
-	Bandwidth int `json:"bandwidth,omitempty"`
-}
-
-type CPU struct {
-	// +optional
-	CPUInfo string `json:"cpuInfo,omitempty"`
-	// +optional
-	BogoMips int `json:"bogoMips,omitempty"`
-	// +optional
-	MHZ   int `json:"mhz,omitempty"`
-	Cores int `json:"cores,omitempty"`
-}
-
-type Memory struct {
-	Size int `json:"size"`
-	// +kubebuilder:validation:XPreserveUnknownFields
-	// +kubebuilder:pruning:PreserveUnknownFields
-	// +optional
-	Numa types.Values `json:"numa,omitempty"`
-}
-
-type Disk struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Size int    `json:"size"`
-}
-
-type MachineInfoStatus struct {
+type DHCPLeaseStatus struct {
 	// +optional
 	State string `json:"state"`
 

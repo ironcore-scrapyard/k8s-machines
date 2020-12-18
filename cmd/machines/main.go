@@ -35,5 +35,8 @@ import (
 )
 
 func main() {
-	controllermanager.Start("machines", "Kubernetes Machines Caching Server", "Server caching machines objects")
+	controllermanager.Start(
+		"machines",
+		"Kubernetes Machines Caching Server",
+		"Server caching and indexing machine objects describing information about bare metal machines")
 }

@@ -37,6 +37,10 @@ func (c *FakeMachinesV1alpha1) BaseBoardManagementControllerInfos(namespace stri
 	return &FakeBaseBoardManagementControllerInfos{c, namespace}
 }
 
+func (c *FakeMachinesV1alpha1) DHCPLeases(namespace string) v1alpha1.DHCPLeaseInterface {
+	return &FakeDHCPLeases{c, namespace}
+}
+
 func (c *FakeMachinesV1alpha1) MachineInfos(namespace string) v1alpha1.MachineInfoInterface {
 	return &FakeMachineInfos{c, namespace}
 }

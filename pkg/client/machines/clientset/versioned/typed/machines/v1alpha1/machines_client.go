@@ -32,6 +32,7 @@ import (
 type MachinesV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	BaseBoardManagementControllerInfosGetter
+	DHCPLeasesGetter
 	MachineInfosGetter
 	MachineTypesGetter
 }
@@ -43,6 +44,10 @@ type MachinesV1alpha1Client struct {
 
 func (c *MachinesV1alpha1Client) BaseBoardManagementControllerInfos(namespace string) BaseBoardManagementControllerInfoInterface {
 	return newBaseBoardManagementControllerInfos(c, namespace)
+}
+
+func (c *MachinesV1alpha1Client) DHCPLeases(namespace string) DHCPLeaseInterface {
+	return newDHCPLeases(c, namespace)
 }
 
 func (c *MachinesV1alpha1Client) MachineInfos(namespace string) MachineInfoInterface {

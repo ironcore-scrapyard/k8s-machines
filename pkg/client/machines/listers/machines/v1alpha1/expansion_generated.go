@@ -31,6 +31,14 @@ type BaseBoardManagementControllerInfoListerExpansion interface{}
 // BaseBoardManagementControllerInfoNamespaceLister.
 type BaseBoardManagementControllerInfoNamespaceListerExpansion interface{}
 
+// DHCPLeaseListerExpansion allows custom methods to be added to
+// DHCPLeaseLister.
+type DHCPLeaseListerExpansion interface{}
+
+// DHCPLeaseNamespaceListerExpansion allows custom methods to be added to
+// DHCPLeaseNamespaceLister.
+type DHCPLeaseNamespaceListerExpansion interface{}
+
 // MachineInfoListerExpansion allows custom methods to be added to
 // MachineInfoLister.
 type MachineInfoListerExpansion interface{}

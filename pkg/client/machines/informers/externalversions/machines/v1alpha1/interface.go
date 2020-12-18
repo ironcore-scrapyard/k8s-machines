@@ -31,6 +31,8 @@ import (
 type Interface interface {
 	// BaseBoardManagementControllerInfos returns a BaseBoardManagementControllerInfoInformer.
 	BaseBoardManagementControllerInfos() BaseBoardManagementControllerInfoInformer
+	// DHCPLeases returns a DHCPLeaseInformer.
+	DHCPLeases() DHCPLeaseInformer
 	// MachineInfos returns a MachineInfoInformer.
 	MachineInfos() MachineInfoInformer
 	// MachineTypes returns a MachineTypeInformer.
@@ -51,6 +53,11 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // BaseBoardManagementControllerInfos returns a BaseBoardManagementControllerInfoInformer.
 func (v *version) BaseBoardManagementControllerInfos() BaseBoardManagementControllerInfoInformer {
 	return &baseBoardManagementControllerInfoInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// DHCPLeases returns a DHCPLeaseInformer.
+func (v *version) DHCPLeases() DHCPLeaseInformer {
+	return &dHCPLeaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // MachineInfos returns a MachineInfoInformer.
