@@ -216,13 +216,13 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.9
   creationTimestamp: null
-  name: ldhcpleases.machines.onmetal.de
+  name: dhcpleases.machines.onmetal.de
 spec:
   group: machines.onmetal.de
   names:
     kind: DHCPLease
     listKind: DHCPLeaseList
-    plural: ldhcpleases
+    plural: dhcpleases
     shortNames:
     - dlease
     singular: dhcplease

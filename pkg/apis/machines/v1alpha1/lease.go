@@ -38,7 +38,7 @@ type DHCPLeaseList struct {
 
 // +kubebuilder:storageversion
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:scope=Namespaced,shortName=dlease,path=ldhcpleases,singular=dhcplease
+// +kubebuilder:resource:scope=Namespaced,shortName=dlease,path=dhcpleases,singular=dhcplease
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name=Hostname,JSONPath=".spec.hostname",type=string,description="hostname of machine"
 // +kubebuilder:printcolumn:name=MAC,JSONPath=".spec.macAddress",type=string
